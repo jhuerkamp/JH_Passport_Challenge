@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 
 class ProfilesTableViewController: UITableViewController {
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
     }

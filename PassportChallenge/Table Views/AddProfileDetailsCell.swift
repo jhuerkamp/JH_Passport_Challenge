@@ -11,4 +11,7 @@ import UIKit
 
 class AddProfileDetailsCell: UITableViewCell {
     
+    @IBOutlet weak var nameText: UITextField!
+    @IBOutlet weak var genderText: UITextField!
+    @IBOutlet weak var ageText: UITextField!
 }
