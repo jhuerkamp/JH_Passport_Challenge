@@ -8,23 +8,30 @@
 
 import Foundation
 import UIKit
+import Firebase
+import FirebaseDatabase
 
 class AddProfileTableView: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var tableView: UITableView!
     
-    var profile = Profile()
+    var hobbies: [String] = [""]
+    
+    //Firebase vars
+    var profileRef: DatabaseReference!
+    var profiles: [DataSnapshot]! = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.separatorStyle = .none
+        let saveButton = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.done, target: self, action: #selector(AddProfileTableView.saveProfile))
+        navigationItem.rightBarButtonItem = saveButton
         
-        let doneButton = UIBarButtonItem(title: "Save", style: UIBarButtonItemStyle.done, target: self, action: #selector(AddProfileTableView.saveProfile))
-        navigationItem.rightBarButtonItem = doneButton
+        //Populate Firebase reference
+        profileRef = Database.database().reference(withPath: "profiles")
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1 + profile.hobbies.count
+        return 1 + hobbies.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -49,31 +56,39 @@ class AddProfileTableView: UIViewController, UITableViewDelegate, UITableViewDat
     }
     
     @IBAction func addHobbyTapped(_ sender: UIButton) {
-        profile.hobbies.append("")
+        hobbies.append("")
         tableView.reloadData()
     }
     
     @objc
     func saveProfile() {
+        var profileData: [String: Any] = [:]
+        
         if let detailCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? AddProfileDetailsCell {
             if let nameText = detailCell.nameText.text,
                 let genderText = detailCell.genderText.text,
                 let ageText = detailCell.ageText.text {
-                    profile.name = nameText
-                    profile.gender = genderText
-                    profile.age = ageText
+                    profileData[Profile.fields.name] = nameText
+                    profileData[Profile.fields.gender] = genderText
+                    profileData[Profile.fields.age] = ageText
                 
-                //Clear text fields
-                detailCell.nameText.text = ""
-                detailCell.genderText.text = ""
-                detailCell.ageText.text = ""
+                    //Clear text fields
+                    detailCell.nameText.text = ""
+                    detailCell.genderText.text = ""
+                    detailCell.ageText.text = ""
             }
         }
 
-        for i in 0 ..< profile.hobbies.count {
+        for i in 0 ..< hobbies.count {
             if let hobbyCell = tableView.cellForRow(at: IndexPath(row: i+1, section: 0)) as? AddProfileHobbyCell {
-                profile.hobbies[i] = hobbyCell.hobbyText.text!
+                hobbies[i] = hobbyCell.hobbyText.text!
+                hobbyCell.hobbyText.text = ""
             }
         }
+        profileData[Profile.fields.hobbies] = hobbies
+        
+        profileRef.childByAutoId().setValue(profileData)
+        hobbies = [""]
+        tableView.reloadData()
     }
 }
