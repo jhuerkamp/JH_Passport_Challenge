@@ -11,8 +11,9 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 
-class AddProfileTableView: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class AddProfileTableView: UIViewController, UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var profileImage: UIButton!
     
     var hobbies: [String] = [""]
     var hobbyString = ""
@@ -96,5 +97,40 @@ class AddProfileTableView: UIViewController, UITableViewDelegate, UITableViewDat
         profileRef.childByAutoId().setValue(profileData)
         hobbies = [""]
         tableView.reloadData()
+    }
+    
+    @IBAction func addImageTapped(_ sender: UIButton) {
+        let alert = UIAlertController(title: "Image from...", message: nil, preferredStyle: UIAlertControllerStyle.alert)
+        
+        alert.addAction(UIAlertAction(title: "Camera", style: UIAlertActionStyle.default, handler: { [weak self] (action) in
+            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                guard let strongSelf = self else { return }
+                let imagePicker = UIImagePickerController()
+                imagePicker.delegate = strongSelf
+                imagePicker.sourceType = .camera;
+                imagePicker.allowsEditing = false
+                strongSelf.present(imagePicker, animated: true, completion: nil)
+            }
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Image Picker", style: UIAlertActionStyle.default, handler: { [weak self] (action) in
+            if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+                guard let strongSelf = self else { return }
+                let imagePicker = UIImagePickerController()
+                imagePicker.delegate = strongSelf
+                imagePicker.sourceType = .photoLibrary;
+                imagePicker.allowsEditing = false
+                strongSelf.present(imagePicker, animated: true, completion: nil)
+            }
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    @objc
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+        profileImage.setBackgroundImage(image, for: UIControlState.normal)
+        profileImage.title(for: .normal)
+        dismiss(animated:true, completion: nil)
     }
 }

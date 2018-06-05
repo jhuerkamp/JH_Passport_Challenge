@@ -74,9 +74,9 @@ class ProfilesTableViewController: UITableViewController {
             cell.genderLabel.text = gender
             
             if gender.lowercased() == "m" || gender.lowercased() == "male" {
-                cell.backgroundColor = UIColor.blue
+                cell.backgroundColor = UIColor(red: 0/255.0, green: 102.0/255.0, blue: 204.0/255, alpha: 1.0)
             } else {
-                cell.backgroundColor = UIColor(red: 255.0/255.0, green: 192.0/255.0, blue: 203.0/255.0, alpha: 1.0)
+                cell.backgroundColor = UIColor(red: 255.0/255.0, green: 153.0/255.0, blue: 255.0/255.0, alpha: 1.0)
             }
         }
         cell.genderLabel.text = profile[Profile.fields.gender] as? String
