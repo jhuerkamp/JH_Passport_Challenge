@@ -11,4 +11,5 @@ import UIKit
 
 class ViewProfileHobbyCell: UITableViewCell {
     
+    @IBOutlet weak var hobbyLabel: UILabel!
 }

@@ -87,6 +87,15 @@ class ProfilesTableViewController: UITableViewController {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let profile = profiles[indexPath.row]
+        guard let profileView = storyboard?.instantiateViewController(withIdentifier: "ViewProfileTableViewController") as? ViewProfileTableViewController
+            else { return }
+        profileView.keyRef = profile.key
+        
+        navigationController?.pushViewController(profileView, animated: true)
+    }
+    
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 140
     }
