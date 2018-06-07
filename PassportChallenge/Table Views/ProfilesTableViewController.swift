@@ -21,7 +21,6 @@ class ProfilesTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ref = Database.database().reference(withPath: "profiles")
-        
         setObservers()
     }
     
@@ -81,19 +80,27 @@ class ProfilesTableViewController: UITableViewController {
         }
         cell.genderLabel.text = profile[Profile.fields.gender] as? String
         
-        if let hobbies = profile[Profile.fields.hobbies] as? String {
-            cell.hobbiesLabel.text = "Hobbies: \(hobbies)"
+        if let hobbies = profile[Profile.fields.hobbies] as? [String] {
+            cell.hobbiesLabel.text = "Hobbies: "
+            for hobby in hobbies {
+                cell.hobbiesLabel.text! += "\(hobby)"
+                if hobbies.index(of: hobby)! < hobbies.count - 1 {
+                    cell.hobbiesLabel.text! += ", "
+                }
+            }
         }
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let profile = profiles[indexPath.row]
-        guard let profileView = storyboard?.instantiateViewController(withIdentifier: "ViewProfileTableViewController") as? ViewProfileTableViewController
-            else { return }
-        profileView.keyRef = profile.key
-        
-        navigationController?.pushViewController(profileView, animated: true)
+        if let profile = profiles[indexPath.row].value as? [String: Any] {
+            guard let profileView = storyboard?.instantiateViewController(withIdentifier: "ViewProfileTableViewController") as? ViewProfileTableViewController
+                else { return }
+            profileView.profile = profile
+            
+            navigationController?.pushViewController(profileView, animated: true)
+
+        }
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

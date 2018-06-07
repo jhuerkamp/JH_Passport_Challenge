@@ -8,8 +8,6 @@
 
 import Foundation
 import UIKit
-import Firebase
-import FirebaseDatabase
 
 class ViewProfileTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -18,18 +16,6 @@ class ViewProfileTableViewController: UIViewController, UITableViewDataSource, U
     var keyRef = ""
     var profile: [String: Any] = [:]
     var hobbies: [String] = []
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        Database.database().reference(withPath: "profiles").observe(DataEventType.childAdded, with: { [weak self] (snapshot) in
-            guard let strongSelf = self else { return }
-            if snapshot.key == strongSelf.keyRef {
-                strongSelf.profile = snapshot.value as! [String: Any]
-                strongSelf.tableView.reloadData()
-            }
-        })
-    }
-    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let temp = profile[Profile.fields.hobbies] as? [String] {
@@ -53,7 +39,7 @@ class ViewProfileTableViewController: UIViewController, UITableViewDataSource, U
             cell.hobbyLabel.text = hobbies[indexPath.row - 1]
             return cell
             
-        }        
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

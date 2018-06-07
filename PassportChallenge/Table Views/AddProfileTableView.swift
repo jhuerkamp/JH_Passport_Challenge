@@ -16,7 +16,6 @@ class AddProfileTableView: UIViewController, UITableViewDelegate, UITableViewDat
     @IBOutlet weak var profileImage: UIButton!
     
     var hobbies: [String] = [""]
-    var hobbyString = ""
     
     //Firebase vars
     var profileRef: DatabaseReference!
@@ -84,15 +83,10 @@ class AddProfileTableView: UIViewController, UITableViewDelegate, UITableViewDat
         for i in 0 ..< hobbies.count {
             if let hobbyCell = tableView.cellForRow(at: IndexPath(row: i+1, section: 0)) as? AddProfileHobbyCell {
                 hobbies[i] = hobbyCell.hobbyText.text!
-                
-                if i > 0 {
-                    hobbyString += ", "
-                }
-                hobbyString += hobbyCell.hobbyText.text!
                 hobbyCell.hobbyText.text = ""
             }
         }
-        profileData[Profile.fields.hobbies] = hobbyString //hobbies
+        profileData[Profile.fields.hobbies] = hobbies
         
         profileRef.childByAutoId().setValue(profileData)
         hobbies = [""]
