@@ -13,25 +13,30 @@ class ViewProfileTableViewController: UIViewController, UITableViewDataSource, U
     
     @IBOutlet weak var imageButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var noImageLabel: UILabel!
     var keyRef = ""
-    var profile: [String: Any] = [:]
+    var profile = Profile()
     var hobbies: [String] = []
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let temp = profile[Profile.fields.hobbies] as? [String] {
-            hobbies = temp
-            return 1 + hobbies.count
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let image = profile.image {
+            imageButton.imageView?.image = image
         }
-        return 1
+    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        hobbies = profile.hobbies
+        return 1 + hobbies.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.row {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "ViewProfileDetailsCell", for: indexPath) as! ViewProfileDetailsTableCell
-            cell.nameLabel.text = profile[Profile.fields.name] as? String
-            cell.ageLabel.text = profile[Profile.fields.age] as? String
-            cell.genderLabel.text = profile[Profile.fields.gender] as? String
+            cell.nameLabel.text = profile.name
+            cell.ageLabel.text = profile.age
+            cell.genderLabel.text = profile.gender
             
             return cell
         default:

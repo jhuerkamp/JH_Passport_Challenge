@@ -9,23 +9,38 @@
 import Foundation
 import UIKit
 import Firebase
-import FirebaseDatabase
+import FirebaseAuth
 
 class ProfilesTableViewController: UITableViewController {
     //Firebase observers
     fileprivate var addedObserver: DatabaseHandle?
     fileprivate var changedObserver: DatabaseHandle?
+    
     var ref: DatabaseReference!
-    var profiles: [DataSnapshot]! = []
+    var storageRef: StorageReference!
+    var profiles: [Profile] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         ref = Database.database().reference(withPath: "profiles")
+        storageRef = Storage.storage().reference()
+        
+        if Auth.auth().currentUser == nil {
+            Auth.auth().signInAnonymously(completion: { (authResult, error) in
+                if let _ = error {
+                }
+            })
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         setObservers()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        profiles = []
         
         if let observer = addedObserver  {
             ref.removeObserver(withHandle: observer)
@@ -40,21 +55,56 @@ class ProfilesTableViewController: UITableViewController {
         // Listen for new messages in the Firebase database
         addedObserver = self.ref.queryOrderedByKey().observe(.childAdded, with: { [weak self] (snapshot) -> Void in
             guard let strongSelf = self else { return }
-            strongSelf.profiles.append(snapshot)
+            
+            if let tempProfile = snapshot.value as? [String: Any] {
+                strongSelf.profiles.append(strongSelf.convertToProfile(tempProfile: tempProfile))
+            }
             strongSelf.tableView.reloadData()
         })
         
         changedObserver = ref.queryOrderedByKey().observe(.childChanged, with: { [weak self] (snapshot) -> Void in
             guard let strongSelf = self else { return }
             
-            for c in strongSelf.profiles {
+            for var c in strongSelf.profiles {
                 if c.key == snapshot.key {
-                    let index = strongSelf.profiles.index(of: c)
-                    strongSelf.profiles[index!] = snapshot
+//                    let index = strongSelf.profiles.index(of: c)
+//                    strongSelf.profiles[index!] = snapshot
+                    
+                    if let tempProfile = snapshot.value as? [String: Any] {
+                        c = strongSelf.convertToProfile(tempProfile: tempProfile)
+                    }
                 }
             }
             strongSelf.tableView.reloadData()
         })
+    }
+    
+    func downloadImage(profile: Profile) {
+        if let _ = profile.image { return }
+        
+        storageRef.child(profile.imageName).getData(maxSize: 10 * 1024 * 1024) { [weak self](data, error) in
+            guard let strongSelf = self else { return }
+            if let error = error {
+                NSLog("Download error: \(error)")
+            } else if let imagedata = data {
+                profile.image = UIImage(data: imagedata)
+                strongSelf.tableView.reloadData()
+            }
+        }
+    }
+    
+    func convertToProfile(tempProfile: [String: Any]) -> Profile {
+        let profile = Profile()
+        profile.name = tempProfile[ProfileFields.name] as! String
+        profile.gender = tempProfile[ProfileFields.gender] as! String
+        profile.age = tempProfile[ProfileFields.age] as! String
+        profile.hobbies = tempProfile[ProfileFields.hobbies] as! [String]
+        
+        if let tempName = tempProfile[ProfileFields.imageUrl] as? String {
+            profile.imageName = tempName
+        }
+        
+        return profile
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -63,44 +113,42 @@ class ProfilesTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileCell", for: indexPath) as! ProfilesTableCell
-        guard let profile = profiles[indexPath.row].value as? [String:Any] else { return cell }
+        let profile = profiles[indexPath.row]
+
+        
+        cell.nameLabel.text = profile.name
+        cell.ageLabel.text = profile.age
+        cell.genderLabel.text = profile.gender
         
         
-        cell.nameLabel.text = profile[Profile.fields.name] as? String
-        cell.ageLabel.text = profile[Profile.fields.age] as? String
-        
-        if let gender = profile[Profile.fields.gender] as? String {
-            cell.genderLabel.text = gender
-            
-            if gender.lowercased() == "m" || gender.lowercased() == "male" {
-                cell.backgroundColor = UIColor(red: 0/255.0, green: 102.0/255.0, blue: 204.0/255, alpha: 1.0)
-            } else {
-                cell.backgroundColor = UIColor(red: 255.0/255.0, green: 153.0/255.0, blue: 255.0/255.0, alpha: 1.0)
-            }
+        if let profileImage = profile.image {
+            cell.profileImage.image = profileImage
+        } else if profile.imageName.count > 0 {
+            downloadImage(profile: profile)
         }
-        cell.genderLabel.text = profile[Profile.fields.gender] as? String
         
-        if let hobbies = profile[Profile.fields.hobbies] as? [String] {
-            cell.hobbiesLabel.text = "Hobbies: "
-            for hobby in hobbies {
-                cell.hobbiesLabel.text! += "\(hobby)"
-                if hobbies.index(of: hobby)! < hobbies.count - 1 {
-                    cell.hobbiesLabel.text! += ", "
-                }
+        if profile.gender.lowercased() == "m" || profile.gender.lowercased() == "male" {
+            cell.backgroundColor = UIColor(red: 0/255.0, green: 102.0/255.0, blue: 204.0/255, alpha: 1.0)
+        } else {
+            cell.backgroundColor = UIColor(red: 255.0/255.0, green: 153.0/255.0, blue: 255.0/255.0, alpha: 1.0)
+        }
+        
+        cell.hobbiesLabel.text = "Hobbies: "
+        for hobby in profile.hobbies {
+            cell.hobbiesLabel.text! += "\(hobby)"
+            if profile.hobbies.index(of: hobby)! < profile.hobbies.count - 1 {
+                cell.hobbiesLabel.text! += ", "
             }
         }
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let profile = profiles[indexPath.row].value as? [String: Any] {
-            guard let profileView = storyboard?.instantiateViewController(withIdentifier: "ViewProfileTableViewController") as? ViewProfileTableViewController
-                else { return }
-            profileView.profile = profile
-            
-            navigationController?.pushViewController(profileView, animated: true)
-
-        }
+        guard let profileView = storyboard?.instantiateViewController(withIdentifier: "ViewProfileTableViewController") as? ViewProfileTableViewController
+            else { return }
+        profileView.profile = profiles[indexPath.row]
+    
+        navigationController?.pushViewController(profileView, animated: true)
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

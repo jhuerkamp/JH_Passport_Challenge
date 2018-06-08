@@ -330,6 +330,13 @@
                                     <action selector="updateTapped:" destination="Hse-nU-W9v" eventType="touchUpInside" id="qES-h9-RQ4"/>
                                 </connections>
                             </button>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Profile Image Not Available" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v2c-9c-ZpV">
+                                <rect key="frame" x="16" y="63" width="343" height="83"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="25"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -341,6 +348,7 @@
                     </view>
                     <connections>
                         <outlet property="imageButton" destination="4u7-9f-b4h" id="1C7-oB-yMa"/>
+                        <outlet property="noImageLabel" destination="v2c-9c-ZpV" id="1GH-RU-jTb"/>
                         <outlet property="tableView" destination="O5J-wP-2s9" id="Kc7-AM-LYV"/>
                     </connections>
                 </viewController>
