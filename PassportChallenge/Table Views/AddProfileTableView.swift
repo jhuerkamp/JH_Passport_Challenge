@@ -109,8 +109,13 @@ class AddProfileTableView: UIViewController, UITableViewDelegate, UITableViewDat
                 let genderText = detailCell.genderText.text,
                 let ageText = detailCell.ageText.text {
                 profileData[ProfileFields.name] = nameText
-                profileData[ProfileFields.gender] = genderText
                 profileData[ProfileFields.age] = ageText
+                
+                if genderText.lowercased() == "m" || genderText.lowercased() == "male" {
+                    profileData[ProfileFields.gender] = "Male"
+                } else {
+                    profileData[ProfileFields.gender] = "Female"
+                }
             }
         }
         

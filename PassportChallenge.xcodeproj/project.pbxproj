@@ -17,6 +17,7 @@
 		D11BEC8020C4703600273206 /* AddProfileHobbyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11BEC7F20C4703600273206 /* AddProfileHobbyCell.swift */; };
 		D11BEC8320C47E9300273206 /* ProfileFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11BEC8220C47E9300273206 /* ProfileFields.swift */; };
 		D11BEC8520CACDCA00273206 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11BEC8420CACDCA00273206 /* Profile.swift */; };
+		D11BEC8720CB7BE200273206 /* SortProfileTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11BEC8620CB7BE200273206 /* SortProfileTableViewController.swift */; };
 		D14BB7DF20C2C09600EBEF7D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14BB7DE20C2C09600EBEF7D /* AppDelegate.swift */; };
 		D14BB7E120C2C09600EBEF7D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14BB7E020C2C09600EBEF7D /* ViewController.swift */; };
 		D14BB7E420C2C09600EBEF7D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D14BB7E220C2C09600EBEF7D /* Main.storyboard */; };
@@ -41,6 +42,7 @@
 		D11BEC7F20C4703600273206 /* AddProfileHobbyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProfileHobbyCell.swift; sourceTree = "<group>"; };
 		D11BEC8220C47E9300273206 /* ProfileFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFields.swift; sourceTree = "<group>"; };
 		D11BEC8420CACDCA00273206 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
+		D11BEC8620CB7BE200273206 /* SortProfileTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortProfileTableViewController.swift; sourceTree = "<group>"; };
 		D14BB7DB20C2C09600EBEF7D /* PassportChallenge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PassportChallenge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D14BB7DE20C2C09600EBEF7D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D14BB7E020C2C09600EBEF7D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 				D11BEC7B20C3224E00273206 /* ProfilesTableViewController.swift */,
 				D11BEC7D20C322CA00273206 /* ProfilesTableCell.swift */,
 				D11BEC7F20C4703600273206 /* AddProfileHobbyCell.swift */,
+				D11BEC8620CB7BE200273206 /* SortProfileTableViewController.swift */,
 			);
 			path = "Table Views";
 			sourceTree = "<group>";
@@ -169,7 +172,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0910;
-				LastUpgradeCheck = 0910;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "Josh Huerkamp";
 				TargetAttributes = {
 					D14BB7DA20C2C09600EBEF7D = {
@@ -263,6 +266,7 @@
 				D14BB7E120C2C09600EBEF7D /* ViewController.swift in Sources */,
 				D11BEC8320C47E9300273206 /* ProfileFields.swift in Sources */,
 				D11BEC7220C312E000273206 /* ViewProfileDetailsTableCell.swift in Sources */,
+				D11BEC8720CB7BE200273206 /* SortProfileTableViewController.swift in Sources */,
 				D11BEC8520CACDCA00273206 /* Profile.swift in Sources */,
 				D11BEC7E20C322CA00273206 /* ProfilesTableCell.swift in Sources */,
 				D11BEC7420C3137900273206 /* ViewProfileHeaderView.swift in Sources */,
@@ -312,6 +316,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -319,6 +324,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -369,6 +375,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -376,6 +383,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;

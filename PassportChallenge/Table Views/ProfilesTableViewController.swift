@@ -11,14 +11,18 @@ import UIKit
 import Firebase
 import FirebaseAuth
 
-class ProfilesTableViewController: UITableViewController {
+class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
     //Firebase observers
     fileprivate var addedObserver: DatabaseHandle?
     fileprivate var changedObserver: DatabaseHandle?
     
+    @IBOutlet weak var sortButton: UIBarButtonItem!
     var ref: DatabaseReference!
     var storageRef: StorageReference!
     var profiles: [Profile] = []
+    var sortBy: SortFilter = .none
+    var orderBy: OrderBy = .none
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +39,7 @@ class ProfilesTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         setObservers()
     }
     
@@ -53,16 +58,42 @@ class ProfilesTableViewController: UITableViewController {
     
     func setObservers() {
         // Listen for new messages in the Firebase database
-        addedObserver = self.ref.queryOrderedByKey().observe(.childAdded, with: { [weak self] (snapshot) -> Void in
-            guard let strongSelf = self else { return }
-            
-            if let tempProfile = snapshot.value as? [String: Any] {
-                strongSelf.profiles.append(strongSelf.convertToProfile(tempProfile: tempProfile))
+        if sortBy == .none {
+            addedObserver = ref.observe(.childAdded, with: { [weak self] (snapshot) -> Void in
+                guard let strongSelf = self else { return }
+                
+                strongSelf.displayProfiles(snapshot: snapshot)
+            })
+        } else if sortBy == .male || sortBy == .female {
+            addedObserver = ref.queryOrdered(byChild: ProfileFields.gender).queryEqual(toValue: sortBy.rawValue).observe(.value) { [weak self] (snapshots) in
+                guard let strongSelf = self else { return }
+                if let snapshot = snapshots.children.allObjects as? [DataSnapshot] {
+                    for temp in snapshot {
+                        strongSelf.displayProfiles(snapshot: temp)
+                    }
+                    if strongSelf.orderBy == .desc {
+                        strongSelf.profiles.reverse()
+                    }
+                }
+                strongSelf.tableView.reloadData()
             }
-            strongSelf.tableView.reloadData()
-        })
+        } else {
+            addedObserver = ref.queryOrdered(byChild: sortBy.rawValue).observe(.value) { [weak self] (snapshots) in
+                guard let strongSelf = self else { return }
+
+                if let snapshot = snapshots.children.allObjects as? [DataSnapshot] {
+                    for temp in snapshot {
+                        strongSelf.displayProfiles(snapshot: temp)
+                    }
+                    if strongSelf.orderBy == .desc {
+                        strongSelf.profiles.reverse()
+                    }
+                }
+                strongSelf.tableView.reloadData()
+            }
+        }
         
-        changedObserver = ref.queryOrderedByKey().observe(.childChanged, with: { [weak self] (snapshot) -> Void in
+        changedObserver = ref.observe(.childChanged, with: { [weak self] (snapshot) -> Void in
             guard let strongSelf = self else { return }
             
             for var c in strongSelf.profiles {
@@ -105,6 +136,33 @@ class ProfilesTableViewController: UITableViewController {
         }
         
         return profile
+    }
+    
+    @IBAction func sortButtonTapped(_ sender: UIBarButtonItem) {
+        
+    }
+    
+    @IBAction func sortTapped(_ sender: UIBarButtonItem) {
+        guard let sortView = storyboard?.instantiateViewController(withIdentifier: "SortProfileTableViewController") as? SortProfileTableViewController
+            else { return }
+        
+        sortView.sortBy = sortBy
+        sortView.orderBy = orderBy
+        sortView.delegate = self
+        navigationController?.present(sortView, animated: true, completion: nil)
+    }
+    
+    func sortBy(newSort: SortFilter, newOrder: OrderBy) {
+        sortBy = newSort
+        orderBy = newOrder
+        profiles = []
+    }
+    
+    func displayProfiles(snapshot: DataSnapshot) {
+        if let tempProfile = snapshot.value as? [String: Any] {
+            profiles.append(convertToProfile(tempProfile: tempProfile))
+        }
+        tableView.reloadData()
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
