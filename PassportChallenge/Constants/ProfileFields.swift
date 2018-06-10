@@ -15,7 +15,7 @@ struct ProfileFields {
     static let name = "name"
     static let gender = "gender"
     static let age = "age"
-    static let imageUrl = "imageUrl"
+    static let imageName = "imageName"
 }
 
 

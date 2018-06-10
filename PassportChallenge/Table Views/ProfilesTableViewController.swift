@@ -102,7 +102,7 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
 //                    strongSelf.profiles[index!] = snapshot
                     
                     if let tempProfile = snapshot.value as? [String: Any] {
-                        c = strongSelf.convertToProfile(tempProfile: tempProfile)
+                        c = strongSelf.convertToProfile(tempProfile: tempProfile, key: c.key)
                     }
                 }
             }
@@ -124,14 +124,15 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
         }
     }
     
-    func convertToProfile(tempProfile: [String: Any]) -> Profile {
+    func convertToProfile(tempProfile: [String: Any], key: String) -> Profile {
         let profile = Profile()
+        profile.key = key
         profile.name = tempProfile[ProfileFields.name] as! String
         profile.gender = tempProfile[ProfileFields.gender] as! String
         profile.age = tempProfile[ProfileFields.age] as! String
         profile.hobbies = tempProfile[ProfileFields.hobbies] as! [String]
         
-        if let tempName = tempProfile[ProfileFields.imageUrl] as? String {
+        if let tempName = tempProfile[ProfileFields.imageName] as? String {
             profile.imageName = tempName
         }
         
@@ -160,7 +161,7 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
     
     func displayProfiles(snapshot: DataSnapshot) {
         if let tempProfile = snapshot.value as? [String: Any] {
-            profiles.append(convertToProfile(tempProfile: tempProfile))
+            profiles.append(convertToProfile(tempProfile: tempProfile, key: snapshot.key))
         }
         tableView.reloadData()
     }

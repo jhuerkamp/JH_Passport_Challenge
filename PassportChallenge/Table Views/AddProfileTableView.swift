@@ -58,6 +58,21 @@ class AddProfileTableView: UIViewController, UITableViewDelegate, UITableViewDat
         }
     }
     
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return indexPath.row > 1
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            hobbies.remove(at: indexPath.row - 1)
+            tableView.deleteRows(at: [indexPath], with: .left)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
+        return "Remove"
+    }
+    
     @IBAction func addHobbyTapped(_ sender: UIButton) {
         hobbies.append("")
         tableView.reloadData()
@@ -126,7 +141,7 @@ class AddProfileTableView: UIViewController, UITableViewDelegate, UITableViewDat
         }
         profileData[ProfileFields.hobbies] = hobbies
         if let tempName = imageName {
-            profileData[ProfileFields.imageUrl] = tempName
+            profileData[ProfileFields.imageName] = tempName
         }
         
         profileRef.childByAutoId().setValue(profileData)
