@@ -17,7 +17,7 @@ enum AddEditMode: Int {
 }
 
 class AddEditViewTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,
-UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
     
     @IBOutlet weak var imageButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
@@ -30,6 +30,17 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     var hobbies: [String] = []
     var profileUpdate: [String: Any] = [:]
     var viewMode: AddEditMode = .add
+    
+    override func viewDidLoad() {
+        NotificationCenter.default.addObserver(self,
+                selector: #selector(AddEditViewTableViewController.keyboardWillShow(notification:)), name: Notification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self,
+                selector: #selector(AddEditViewTableViewController.keyboardWillHide(notification:)), name: Notification.Name.UIKeyboardWillHide, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -109,6 +120,25 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
             return 160
         }
         return 50
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    @objc
+    func keyboardWillShow(notification: NSNotification) {
+        if let keyboardHeight = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
+            tableView.contentInset = UIEdgeInsetsMake(0, 0, keyboardHeight, 0)
+        }
+    }
+    
+    @objc
+    func keyboardWillHide(notification: NSNotification) {
+        UIView.animate(withDuration: 0.2, animations: {
+            self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0)
+        })
     }
     
     @IBAction func imageButtonTapped(_ sender: UIButton) {
