@@ -23,7 +23,7 @@
 		D14BB7E420C2C09600EBEF7D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D14BB7E220C2C09600EBEF7D /* Main.storyboard */; };
 		D14BB7E620C2C09600EBEF7D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D14BB7E520C2C09600EBEF7D /* Assets.xcassets */; };
 		D14BB7E920C2C09600EBEF7D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D14BB7E720C2C09600EBEF7D /* LaunchScreen.storyboard */; };
-		D16BD79320C2E2C700BA167D /* ViewProfileTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16BD79220C2E2C700BA167D /* ViewProfileTableViewController.swift */; };
+		D16BD79320C2E2C700BA167D /* AddEditViewTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16BD79220C2E2C700BA167D /* AddEditViewTableViewController.swift */; };
 		D1AD341C20CC7F88003AA647 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D1AD341B20CC7F88003AA647 /* GoogleService-Info.plist */; };
 		F000CC71F26A630E9B07D882 /* Pods_PassportChallenge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C6FC47169B1EEC9C69D3EFB /* Pods_PassportChallenge.framework */; };
 /* End PBXBuildFile section */
@@ -50,7 +50,7 @@
 		D14BB7E520C2C09600EBEF7D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D14BB7E820C2C09600EBEF7D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D14BB7EA20C2C09600EBEF7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D16BD79220C2E2C700BA167D /* ViewProfileTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewProfileTableViewController.swift; sourceTree = "<group>"; };
+		D16BD79220C2E2C700BA167D /* AddEditViewTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditViewTableViewController.swift; sourceTree = "<group>"; };
 		D1AD341B20CC7F88003AA647 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -86,7 +86,7 @@
 		D11BEC7020C3126B00273206 /* Table Views */ = {
 			isa = PBXGroup;
 			children = (
-				D16BD79220C2E2C700BA167D /* ViewProfileTableViewController.swift */,
+				D16BD79220C2E2C700BA167D /* AddEditViewTableViewController.swift */,
 				D11BEC7120C312E000273206 /* ViewProfileDetailsTableCell.swift */,
 				D11BEC7320C3137900273206 /* ViewProfileHeaderView.swift */,
 				D11BEC7520C3191C00273206 /* ViewProfileHobbyCell.swift */,
@@ -271,7 +271,7 @@
 				D11BEC7E20C322CA00273206 /* ProfilesTableCell.swift in Sources */,
 				D11BEC7420C3137900273206 /* ViewProfileHeaderView.swift in Sources */,
 				D14BB7DF20C2C09600EBEF7D /* AppDelegate.swift in Sources */,
-				D16BD79320C2E2C700BA167D /* ViewProfileTableViewController.swift in Sources */,
+				D16BD79320C2E2C700BA167D /* AddEditViewTableViewController.swift in Sources */,
 				D11BEC8020C4703600273206 /* AddProfileHobbyCell.swift in Sources */,
 				D11BEC7C20C3224E00273206 /* ProfilesTableViewController.swift in Sources */,
 				D11BEC7620C3191C00273206 /* ViewProfileHobbyCell.swift in Sources */,

@@ -1,5 +1,5 @@
 //
-//  ViewProfileTableViewController.swift
+//  AddEditViewTableViewController.swift
 //  PassportChallenge
 //
 //  Created by Josh Huerkamp on 6/2/18.
@@ -11,28 +11,58 @@ import UIKit
 import Firebase
 import FirebaseDatabase
 
-class ViewProfileTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,
+enum AddEditMode: Int {
+    case add = 1
+    case edit
+}
+
+class AddEditViewTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,
 UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     @IBOutlet weak var imageButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var noImageLabel: UILabel!
+    @IBOutlet weak var saveDeleteButton: UIButton!
+    @IBOutlet weak var blurEffectView: UIVisualEffectView!
+    
+    
     var keyRef = ""
     var profile = Profile()
     var hobbies: [String] = []
-    var ref: StorageReference!
     var profileUpdate: [String: Any] = [:]
+    var viewMode: AddEditMode = .add
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        let updateButton = UIBarButtonItem(title: "Update", style: UIBarButtonItemStyle.done, target: self, action: #selector(ViewProfileTableViewController.updateProfile))
-        navigationItem.rightBarButtonItem = updateButton
+        switch viewMode {
+        case .add:
+            profile.hobbies = [""]
+            saveDeleteButton.setTitle("Save", for: .normal)
+            saveDeleteButton.addTarget(self, action: #selector(AddEditViewTableViewController.updateProfile), for: .touchUpInside)
+            
+            let navBar = UINavigationBar(frame: CGRect(x: 0, y: 20, width: view.frame.width, height: 44))
+            let navItem = UINavigationItem(title: "Add Profile")
+            let barButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.done, target: self, action: #selector(AddEditViewTableViewController.cancelAdd))
+            navItem.rightBarButtonItem = barButton
+            navBar.items = [navItem]
+            view.addSubview(navBar)
+            
+        default:
+            blurEffectView.isHidden = true
+            view.backgroundColor = UIColor.white
+            saveDeleteButton.setTitle("Delete", for: .normal)
+            saveDeleteButton.addTarget(self, action: #selector(AddEditViewTableViewController.deleteTapped), for: .touchUpInside)
+            let barButton = UIBarButtonItem(title: "Update", style: UIBarButtonItemStyle.done, target: self, action: #selector(AddEditViewTableViewController.updateProfile))
+            navigationItem.rightBarButtonItem = barButton
+            navigationItem.title = "View/Edit Profile"
+        }
         
         if let image = profile.image {
-            imageButton.imageView?.image = image
+            imageButton.setBackgroundImage(image, for: .normal)
+            imageButton.setTitle("", for: .normal)
         }
     }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1 + profile.hobbies.count
     }
@@ -75,6 +105,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         }
         return 50
     }
+    
     @IBAction func imageButtonTapped(_ sender: UIButton) {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
@@ -105,7 +136,8 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         }
     }
     
-    @IBAction func deleteTapped(_ sender: UIButton) {
+    @objc
+    func deleteTapped() {
         if profile.imageName.count > 0 {
             Storage.storage().reference().child(profile.imageName).delete { (error) in
                 if let error = error {
@@ -117,11 +149,16 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         navigationController?.popViewController(animated: true)
     }
     
+    @IBAction func addHobbyTapped(_ sender: UIButton) {
+        profile.hobbies.append("")
+        tableView.reloadData()
+    }
+    
     @objc
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         let image = info[UIImagePickerControllerOriginalImage] as! UIImage
         imageButton.setBackgroundImage(image, for: UIControlState.normal)
-        imageButton.title(for: .normal)
+        imageButton.setTitle("", for: .normal)
         dismiss(animated:true, completion: nil)
     }
     
@@ -131,10 +168,10 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
             if let data = UIImageJPEGRepresentation(image, 0.9) {
                 let formatter = DateFormatter()
                 formatter.dateFormat = "yyyy-MM-dd-HH:mm:ss"
-                let imageName = "profilePics/\(formatter.string(from:Date())).jpg"
+                let imageName = "profilePic\(formatter.string(from:Date())).jpg"
                 let metadata = StorageMetadata()
                 metadata.contentType = "image/jpeg"
-                let imageStoreTask = ref.child(imageName).putData(data, metadata: metadata)
+                let imageStoreTask = Storage.storage().reference().child(imageName).putData(data, metadata: metadata)
                 
                 let uploadAlert = UIAlertController(title: "Uploading Image", message: nil, preferredStyle: .alert)
                 uploadAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { [weak self] (cancel) in
@@ -160,6 +197,11 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         } else {
             saveProfileUpdate(imageName: nil)
         }
+    }
+    
+    @objc
+    func cancelAdd() {
+        dismiss(animated: true, completion: nil)
     }
     
     func saveProfileUpdate(imageName: String?) {
@@ -188,6 +230,10 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
             profileUpdate[ProfileFields.imageName] = tempName
         }
         
-        Database.database().reference(withPath: "profiles").child(profile.key).setValue(profileUpdate)
+        if viewMode == .edit {
+            Database.database().reference(withPath: "profiles").child(profile.key).setValue(profileUpdate)
+        } else {
+            Database.database().reference(withPath: "profiles").childByAutoId().setValue(profileUpdate)
+        }
     }
 }

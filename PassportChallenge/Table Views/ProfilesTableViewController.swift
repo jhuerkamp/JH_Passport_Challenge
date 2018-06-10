@@ -139,10 +139,6 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
         return profile
     }
     
-    @IBAction func sortButtonTapped(_ sender: UIBarButtonItem) {
-        
-    }
-    
     @IBAction func sortTapped(_ sender: UIBarButtonItem) {
         guard let sortView = storyboard?.instantiateViewController(withIdentifier: "SortProfileTableViewController") as? SortProfileTableViewController
             else { return }
@@ -151,6 +147,14 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
         sortView.orderBy = orderBy
         sortView.delegate = self
         navigationController?.present(sortView, animated: true, completion: nil)
+    }
+    
+    @IBAction func addTapped(_ sender: UIBarButtonItem) {
+        guard let addView = storyboard?.instantiateViewController(withIdentifier: "AddEditViewTableViewController") as? AddEditViewTableViewController else { return }
+        
+        addView.viewMode = .add
+        addView.modalPresentationStyle = .overFullScreen
+        navigationController?.present(addView, animated: true, completion: nil)
     }
     
     func sortBy(newSort: SortFilter, newOrder: OrderBy) {
@@ -203,8 +207,9 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let profileView = storyboard?.instantiateViewController(withIdentifier: "ViewProfileTableViewController") as? ViewProfileTableViewController
+        guard let profileView = storyboard?.instantiateViewController(withIdentifier: "AddEditViewTableViewController") as? AddEditViewTableViewController
             else { return }
+        profileView.viewMode = .edit
         profileView.profile = profiles[indexPath.row]
     
         navigationController?.pushViewController(profileView, animated: true)
