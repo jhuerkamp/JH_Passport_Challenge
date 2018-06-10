@@ -20,6 +20,7 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
     var ref: DatabaseReference!
     var storageRef: StorageReference!
     var profiles: [Profile] = []
+    var profileImages: [String: UIImage] = [:]
     var sortBy: SortFilter = .none
     var orderBy: OrderBy = .none
     
@@ -111,14 +112,14 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
     }
     
     func downloadImage(profile: Profile) {
-        if let _ = profile.image { return }
+        if let _ = profileImages[profile.imageName] { return }
         
         storageRef.child(profile.imageName).getData(maxSize: 10 * 1024 * 1024) { [weak self](data, error) in
             guard let strongSelf = self else { return }
             if let error = error {
                 NSLog("Download error: \(error)")
             } else if let imagedata = data {
-                profile.image = UIImage(data: imagedata)
+                strongSelf.profileImages[profile.imageName] = UIImage(data: imagedata)
                 strongSelf.tableView.reloadData()
             }
         }
@@ -184,8 +185,8 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
         cell.genderLabel.text = profile.gender
         
         
-        if let profileImage = profile.image {
-            cell.profileImage.image = profileImage
+        if let image = profileImages[profile.imageName] {
+            cell.profileImage.image = image
         } else if profile.imageName.count > 0 {
             downloadImage(profile: profile)
         }

@@ -71,14 +71,19 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         switch indexPath.row {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileDetailsCell", for: indexPath) as! AddProfileDetailsCell
-            cell.nameText.text = profile.name
-            cell.ageText.text = profile.age
-            cell.genderText.text = profile.gender
+            if viewMode == .edit {
+                cell.nameText.text = profile.name
+                cell.ageText.text = profile.age
+                cell.genderText.text = profile.gender
+            }
             
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: "HobbyCell", for: indexPath) as! AddProfileHobbyCell
-            cell.hobbyText.text = profile.hobbies[indexPath.row - 1]
+            if viewMode == .edit {
+                cell.hobbyText.text = profile.hobbies[indexPath.row - 1]
+            }
+            
             return cell
             
         }
@@ -232,8 +237,11 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         
         if viewMode == .edit {
             Database.database().reference(withPath: "profiles").child(profile.key).setValue(profileUpdate)
+            navigationController?.popViewController(animated: true)
         } else {
             Database.database().reference(withPath: "profiles").childByAutoId().setValue(profileUpdate)
+            dismiss(animated: true, completion: nil)
         }
+        
     }
 }

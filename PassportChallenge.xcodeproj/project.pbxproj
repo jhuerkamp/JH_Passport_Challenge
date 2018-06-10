@@ -10,7 +10,6 @@
 		D11BEC7220C312E000273206 /* ViewProfileDetailsTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11BEC7120C312E000273206 /* ViewProfileDetailsTableCell.swift */; };
 		D11BEC7420C3137900273206 /* ViewProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11BEC7320C3137900273206 /* ViewProfileHeaderView.swift */; };
 		D11BEC7620C3191C00273206 /* ViewProfileHobbyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11BEC7520C3191C00273206 /* ViewProfileHobbyCell.swift */; };
-		D11BEC7820C31FD800273206 /* AddProfileTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11BEC7720C31FD800273206 /* AddProfileTableView.swift */; };
 		D11BEC7A20C31FF100273206 /* AddProfileDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11BEC7920C31FF100273206 /* AddProfileDetailsCell.swift */; };
 		D11BEC7C20C3224E00273206 /* ProfilesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11BEC7B20C3224E00273206 /* ProfilesTableViewController.swift */; };
 		D11BEC7E20C322CA00273206 /* ProfilesTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11BEC7D20C322CA00273206 /* ProfilesTableCell.swift */; };
@@ -35,7 +34,6 @@
 		D11BEC7120C312E000273206 /* ViewProfileDetailsTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewProfileDetailsTableCell.swift; sourceTree = "<group>"; };
 		D11BEC7320C3137900273206 /* ViewProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewProfileHeaderView.swift; sourceTree = "<group>"; };
 		D11BEC7520C3191C00273206 /* ViewProfileHobbyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewProfileHobbyCell.swift; sourceTree = "<group>"; };
-		D11BEC7720C31FD800273206 /* AddProfileTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProfileTableView.swift; sourceTree = "<group>"; };
 		D11BEC7920C31FF100273206 /* AddProfileDetailsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProfileDetailsCell.swift; sourceTree = "<group>"; };
 		D11BEC7B20C3224E00273206 /* ProfilesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilesTableViewController.swift; sourceTree = "<group>"; };
 		D11BEC7D20C322CA00273206 /* ProfilesTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilesTableCell.swift; sourceTree = "<group>"; };
@@ -90,7 +88,6 @@
 				D11BEC7120C312E000273206 /* ViewProfileDetailsTableCell.swift */,
 				D11BEC7320C3137900273206 /* ViewProfileHeaderView.swift */,
 				D11BEC7520C3191C00273206 /* ViewProfileHobbyCell.swift */,
-				D11BEC7720C31FD800273206 /* AddProfileTableView.swift */,
 				D11BEC7920C31FF100273206 /* AddProfileDetailsCell.swift */,
 				D11BEC7B20C3224E00273206 /* ProfilesTableViewController.swift */,
 				D11BEC7D20C322CA00273206 /* ProfilesTableCell.swift */,
@@ -276,7 +273,6 @@
 				D11BEC7C20C3224E00273206 /* ProfilesTableViewController.swift in Sources */,
 				D11BEC7620C3191C00273206 /* ViewProfileHobbyCell.swift in Sources */,
 				D11BEC7A20C31FF100273206 /* AddProfileDetailsCell.swift in Sources */,
-				D11BEC7820C31FD800273206 /* AddProfileTableView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
