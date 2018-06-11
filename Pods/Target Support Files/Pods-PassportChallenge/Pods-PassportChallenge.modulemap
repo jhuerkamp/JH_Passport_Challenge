@@ -1,6 +1,0 @@
-framework module Pods_PassportChallenge {
-  umbrella header "Pods-PassportChallenge-umbrella.h"
-
-  export *
-  module * { export * }
-}
