@@ -10,6 +10,5 @@ import Foundation
 import UIKit
 
 class ViewProfileHobbyCell: UITableViewCell {
-    
-    @IBOutlet weak var hobbyLabel: UILabel!
+     @IBOutlet weak var hobbyLabel: UILabel!
 }

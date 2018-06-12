@@ -34,11 +34,13 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Keyboard scrolling
         NotificationCenter.default.addObserver(self,
                 selector: #selector(AddEditViewTableViewController.keyboardWillShow(notification:)), name: Notification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self,
                 selector: #selector(AddEditViewTableViewController.keyboardWillHide(notification:)), name: Notification.Name.UIKeyboardWillHide, object: nil)
         
+        // Change VC look depending on add or view/edit profile
         switch viewMode {
         case .add:
             profile.hobbies = [""]
@@ -68,6 +70,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
         NotificationCenter.default.removeObserver(self)
     }
     
+    // MARK: - tableview delegates
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1 + profile.hobbies.count
     }
@@ -116,6 +119,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
         return 50
     }
     
+    // MARK: - Textfield/Keyboard functions
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
@@ -135,6 +139,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
         })
     }
     
+    // MARK: - Image functions
     @IBAction func imageButtonTapped(_ sender: UIButton) {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
@@ -165,6 +170,19 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
         }
     }
     
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+        profile.image = UIImageView(image: image)
+        imageButton.setBackgroundImage(image, for: UIControlState.normal)
+        imageButton.setTitle("", for: .normal)
+        dismiss(animated:true, completion: nil)
+    }
+    
+    @IBAction func addHobbyTapped(_ sender: UIButton) {
+        profile.hobbies.append("")
+        tableView.reloadData()
+    }
+        
     @objc
     func deleteTapped() {
         if profile.imageName.count > 0 {
@@ -178,19 +196,12 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
         navigationController?.popViewController(animated: true)
     }
     
-    @IBAction func addHobbyTapped(_ sender: UIButton) {
-        profile.hobbies.append("")
-        tableView.reloadData()
+    @objc
+    func cancelAdd() {
+        dismiss(animated: true, completion: nil)
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
-        profile.image = UIImageView(image: image)
-        imageButton.setBackgroundImage(image, for: UIControlState.normal)
-        imageButton.setTitle("", for: .normal)
-        dismiss(animated:true, completion: nil)
-    }
-    
+    // MARK: - Save/Update functions
     @objc
     func updateProfile() {
         if let image = imageButton.backgroundImage(for: .normal) {
@@ -226,11 +237,6 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
         } else {
             saveProfileUpdate(imageName: nil)
         }
-    }
-    
-    @objc
-    func cancelAdd() {
-        dismiss(animated: true, completion: nil)
     }
     
     func saveProfileUpdate(imageName: String?) {
@@ -270,6 +276,5 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
                 present(alert, animated: true, completion: nil)
             }
         }
-        
     }
 }

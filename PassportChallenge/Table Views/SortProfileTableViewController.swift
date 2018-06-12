@@ -41,6 +41,7 @@ class SortProfileTableViewController: UITableViewController {
         navigationItem.title = "Sort Profiles"
     }
     
+    // MARK: - Tableview functions
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
@@ -51,6 +52,14 @@ class SortProfileTableViewController: UITableViewController {
             return 3
         default:
             return 2
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return "Filter"
+        } else {
+            return "Sort"
         }
     }
     
