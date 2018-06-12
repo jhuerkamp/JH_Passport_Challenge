@@ -33,6 +33,14 @@ class SortProfileTableViewController: UITableViewController {
     var sortBy: SortFilter = .none
     var orderBy: OrderBy = .none
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(SortProfileTableViewController.cancelSort))
+        navigationItem.rightBarButtonItem = cancelButton
+        navigationItem.title = "Sort Profiles"
+    }
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
@@ -105,6 +113,11 @@ class SortProfileTableViewController: UITableViewController {
         }
         
         delegate?.sortBy(newSort: sortBy, newOrder: orderBy)
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @objc
+    func cancelSort() {
         dismiss(animated: true, completion: nil)
     }
     

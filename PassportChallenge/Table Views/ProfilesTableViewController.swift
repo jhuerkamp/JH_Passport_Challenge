@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import Firebase
 import FirebaseAuth
+import FirebaseUI
 
 class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
     //Firebase observers
@@ -20,7 +21,6 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
     var ref: DatabaseReference!
     var storageRef: StorageReference!
     var profiles: [Profile] = []
-    var profileImages: [String: UIImage] = [:]
     var sortBy: SortFilter = .none
     var orderBy: OrderBy = .none
     
@@ -32,7 +32,8 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
         
         if Auth.auth().currentUser == nil {
             Auth.auth().signInAnonymously(completion: { (authResult, error) in
-                if let _ = error {
+                if let error = error {
+                    NSLog("Auth error: \(error)")
                 }
             })
         }
@@ -40,18 +41,15 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         setObservers()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         profiles = []
-        
         if let observer = addedObserver  {
             ref.removeObserver(withHandle: observer)
         }
-        
         if let observer = changedObserver {
             ref.removeObserver(withHandle: observer)
         }
@@ -62,12 +60,12 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
         if sortBy == .none {
             addedObserver = ref.observe(.childAdded, with: { [weak self] (snapshot) -> Void in
                 guard let strongSelf = self else { return }
-                
                 strongSelf.displayProfiles(snapshot: snapshot)
             })
         } else if sortBy == .male || sortBy == .female {
             addedObserver = ref.queryOrdered(byChild: ProfileFields.gender).queryEqual(toValue: sortBy.rawValue).observe(.value) { [weak self] (snapshots) in
                 guard let strongSelf = self else { return }
+                strongSelf.profiles = []
                 if let snapshot = snapshots.children.allObjects as? [DataSnapshot] {
                     for temp in snapshot {
                         strongSelf.displayProfiles(snapshot: temp)
@@ -76,12 +74,11 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
                         strongSelf.profiles.reverse()
                     }
                 }
-                strongSelf.tableView.reloadData()
             }
         } else {
             addedObserver = ref.queryOrdered(byChild: sortBy.rawValue).observe(.value) { [weak self] (snapshots) in
                 guard let strongSelf = self else { return }
-
+                strongSelf.profiles = []
                 if let snapshot = snapshots.children.allObjects as? [DataSnapshot] {
                     for temp in snapshot {
                         strongSelf.displayProfiles(snapshot: temp)
@@ -90,40 +87,32 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
                         strongSelf.profiles.reverse()
                     }
                 }
-                strongSelf.tableView.reloadData()
             }
         }
         
         changedObserver = ref.observe(.childChanged, with: { [weak self] (snapshot) -> Void in
             guard let strongSelf = self else { return }
-            
-            for var c in strongSelf.profiles {
-                if c.key == snapshot.key {
-//                    let index = strongSelf.profiles.index(of: c)
-//                    strongSelf.profiles[index!] = snapshot
-                    
-                    if let tempProfile = snapshot.value as? [String: Any] {
-                        c = strongSelf.convertToProfile(tempProfile: tempProfile, key: c.key)
+            var i = 0
+            for var updateProfile in strongSelf.profiles {
+                if updateProfile.key == snapshot.key {
+                    if let profileSnapshot = snapshot.value as? [String: Any] {
+                        updateProfile = strongSelf.convertToProfile(tempProfile: profileSnapshot, key: updateProfile.key)
+                        strongSelf.profiles[i] = updateProfile
                     }
                 }
+                i += 1
             }
             strongSelf.tableView.reloadData()
         })
     }
     
-    func downloadImage(profile: Profile) {
-        if let _ = profileImages[profile.imageName] { return }
+    func downloadImage(profile: Profile) -> UIImageView {
+            let imageRef = storageRef.child(profile.imageName)
+            profile.image.sd_setImage(with: imageRef)
         
-        storageRef.child(profile.imageName).getData(maxSize: 10 * 1024 * 1024) { [weak self](data, error) in
-            guard let strongSelf = self else { return }
-            if let error = error {
-                NSLog("Download error: \(error)")
-            } else if let imagedata = data {
-                strongSelf.profileImages[profile.imageName] = UIImage(data: imagedata)
-                strongSelf.tableView.reloadData()
-            }
-        }
+        return profile.image
     }
+
     
     func convertToProfile(tempProfile: [String: Any], key: String) -> Profile {
         let profile = Profile()
@@ -143,19 +132,21 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
     @IBAction func sortTapped(_ sender: UIBarButtonItem) {
         guard let sortView = storyboard?.instantiateViewController(withIdentifier: "SortProfileTableViewController") as? SortProfileTableViewController
             else { return }
-        
+        let sortController = UINavigationController(rootViewController: sortView)
+
         sortView.sortBy = sortBy
         sortView.orderBy = orderBy
         sortView.delegate = self
-        navigationController?.present(sortView, animated: true, completion: nil)
+        navigationController?.present(sortController, animated: true, completion: nil)
     }
     
     @IBAction func addTapped(_ sender: UIBarButtonItem) {
         guard let addView = storyboard?.instantiateViewController(withIdentifier: "AddEditViewTableViewController") as? AddEditViewTableViewController else { return }
-        
+        let addController = UINavigationController(rootViewController: addView)
+
         addView.viewMode = .add
-        addView.modalPresentationStyle = .overFullScreen
-        navigationController?.present(addView, animated: true, completion: nil)
+        addController.modalPresentationStyle = .overFullScreen
+        navigationController?.present(addController, animated: true, completion: nil)
     }
     
     func sortBy(newSort: SortFilter, newOrder: OrderBy) {
@@ -185,11 +176,9 @@ class ProfilesTableViewController: UITableViewController, SortProfileDelegate {
         cell.genderLabel.text = profile.gender
         
         
-        if let image = profileImages[profile.imageName] {
-            cell.profileImage.image = image
-        } else if profile.imageName.count > 0 {
-            downloadImage(profile: profile)
-        }
+        let imageRef = storageRef.child(profile.imageName)
+        cell.profileImage.sd_setImage(with: imageRef, placeholderImage: #imageLiteral(resourceName: "placeholderUser"))
+        profile.image = cell.profileImage
         
         if profile.gender.lowercased() == "m" || profile.gender.lowercased() == "male" {
             cell.backgroundColor = UIColor(red: 0/255.0, green: 102.0/255.0, blue: 204.0/255, alpha: 1.0)

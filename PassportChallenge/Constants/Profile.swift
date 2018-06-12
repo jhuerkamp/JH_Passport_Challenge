@@ -15,6 +15,6 @@ class Profile {
     var gender = ""
     var hobbies: [String] = []
     var imageName = ""
-    var image: UIImage?
+    var image = UIImageView()
     var key = ""
 }
