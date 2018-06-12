@@ -11,5 +11,4 @@ import UIKit
 
 class AddProfileHobbyCell: UITableViewCell {
     @IBOutlet weak var hobbyText: UITextField!
-    
 }

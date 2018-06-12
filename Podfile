@@ -10,5 +10,6 @@ target 'PassportChallenge' do
   pod 'Firebase/Storage'
   pod 'Firebase/Database'
   pod 'Firebase/Auth'
+  pod 'FirebaseUI/Storage'
   
 end

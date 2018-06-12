@@ -32,32 +32,24 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
     var viewMode: AddEditMode = .add
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Keyboard scrolling
         NotificationCenter.default.addObserver(self,
                 selector: #selector(AddEditViewTableViewController.keyboardWillShow(notification:)), name: Notification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self,
                 selector: #selector(AddEditViewTableViewController.keyboardWillHide(notification:)), name: Notification.Name.UIKeyboardWillHide, object: nil)
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         
+        // Change VC look depending on add or view/edit profile
         switch viewMode {
         case .add:
             profile.hobbies = [""]
             saveDeleteButton.setTitle("Save", for: .normal)
             saveDeleteButton.addTarget(self, action: #selector(AddEditViewTableViewController.updateProfile), for: .touchUpInside)
-            
-            let navBar = UINavigationBar(frame: CGRect(x: 0, y: 20, width: view.frame.width, height: 44))
-            let navItem = UINavigationItem(title: "Add Profile")
+            imageButton.setTitle("Add Image", for: .normal)
+            navigationItem.title = "Add Profile"
             let barButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.done, target: self, action: #selector(AddEditViewTableViewController.cancelAdd))
-            navItem.rightBarButtonItem = barButton
-            navBar.items = [navItem]
-            view.addSubview(navBar)
-            
+            navigationItem.rightBarButtonItem = barButton
         default:
             blurEffectView.isHidden = true
             view.backgroundColor = UIColor.white
@@ -67,13 +59,18 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
             navigationItem.rightBarButtonItem = barButton
             navigationItem.title = "View/Edit Profile"
         }
-        
-        if let image = profile.image {
-            imageButton.setBackgroundImage(image, for: .normal)
-            imageButton.setTitle("", for: .normal)
-        }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        imageButton.setBackgroundImage(profile.image.image, for: .normal)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: - tableview delegates
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1 + profile.hobbies.count
     }
@@ -122,6 +119,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
         return 50
     }
     
+    // MARK: - Textfield/Keyboard functions
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
@@ -141,6 +139,7 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
         })
     }
     
+    // MARK: - Image functions
     @IBAction func imageButtonTapped(_ sender: UIButton) {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
@@ -171,6 +170,19 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
         }
     }
     
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+        profile.image = UIImageView(image: image)
+        imageButton.setBackgroundImage(image, for: UIControlState.normal)
+        imageButton.setTitle("", for: .normal)
+        dismiss(animated:true, completion: nil)
+    }
+    
+    @IBAction func addHobbyTapped(_ sender: UIButton) {
+        profile.hobbies.append("")
+        tableView.reloadData()
+    }
+        
     @objc
     func deleteTapped() {
         if profile.imageName.count > 0 {
@@ -184,19 +196,12 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
         navigationController?.popViewController(animated: true)
     }
     
-    @IBAction func addHobbyTapped(_ sender: UIButton) {
-        profile.hobbies.append("")
-        tableView.reloadData()
-    }
-    
     @objc
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        let image = info[UIImagePickerControllerOriginalImage] as! UIImage
-        imageButton.setBackgroundImage(image, for: UIControlState.normal)
-        imageButton.setTitle("", for: .normal)
-        dismiss(animated:true, completion: nil)
+    func cancelAdd() {
+        dismiss(animated: true, completion: nil)
     }
     
+    // MARK: - Save/Update functions
     @objc
     func updateProfile() {
         if let image = imageButton.backgroundImage(for: .normal) {
@@ -234,44 +239,42 @@ UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDele
         }
     }
     
-    @objc
-    func cancelAdd() {
-        dismiss(animated: true, completion: nil)
-    }
-    
     func saveProfileUpdate(imageName: String?) {
         if let detailCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? AddProfileDetailsCell {
-            if let nameText = detailCell.nameText.text,
-                let genderText = detailCell.genderText.text,
-                let ageText = detailCell.ageText.text {
-                profileUpdate[ProfileFields.name] = nameText
-                profileUpdate[ProfileFields.age] = ageText
+            if detailCell.nameText.text!.count > 0
+                && detailCell.genderText.text!.count > 0
+                && detailCell.ageText.text!.count > 0 {
+                profileUpdate[ProfileFields.name] = detailCell.nameText.text
+                profileUpdate[ProfileFields.age] = detailCell.ageText.text
                 
-                if genderText.lowercased() == "m" || genderText.lowercased() == "male" {
+                if detailCell.genderText.text!.lowercased() == "m" || detailCell.genderText.text!.lowercased() == "male" {
                     profileUpdate[ProfileFields.gender] = "Male"
                 } else {
                     profileUpdate[ProfileFields.gender] = "Female"
                 }
+                
+                for i in 0 ..< profile.hobbies.count {
+                    if let hobbyCell = tableView.cellForRow(at: IndexPath(row: i+1, section: 0)) as? AddProfileHobbyCell {
+                        profile.hobbies[i] = hobbyCell.hobbyText.text!
+                    }
+                }
+                profileUpdate[ProfileFields.hobbies] = profile.hobbies
+                if let tempName = imageName {
+                    profileUpdate[ProfileFields.imageName] = tempName
+                }
+                
+                if viewMode == .edit {
+                    Database.database().reference(withPath: "profiles").child(profile.key).setValue(profileUpdate)
+                    navigationController?.popViewController(animated: true)
+                } else {
+                    Database.database().reference(withPath: "profiles").childByAutoId().setValue(profileUpdate)
+                    dismiss(animated: true, completion: nil)
+                }
+            } else {
+                let alert = UIAlertController(title: "Profile Incomplete", message: "Please fill out all profile fields", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                present(alert, animated: true, completion: nil)
             }
         }
-        
-        for i in 0 ..< profile.hobbies.count {
-            if let hobbyCell = tableView.cellForRow(at: IndexPath(row: i+1, section: 0)) as? AddProfileHobbyCell {
-                profile.hobbies[i] = hobbyCell.hobbyText.text!
-            }
-        }
-        profileUpdate[ProfileFields.hobbies] = profile.hobbies
-        if let tempName = imageName {
-            profileUpdate[ProfileFields.imageName] = tempName
-        }
-        
-        if viewMode == .edit {
-            Database.database().reference(withPath: "profiles").child(profile.key).setValue(profileUpdate)
-            navigationController?.popViewController(animated: true)
-        } else {
-            Database.database().reference(withPath: "profiles").childByAutoId().setValue(profileUpdate)
-            dismiss(animated: true, completion: nil)
-        }
-        
     }
 }
